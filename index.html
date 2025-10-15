@@ -3,14 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--CSS-->
+    <link rel="stylesheet" href="/Styles/styles.css">
     <!--JS-->
-    <script defer src="/js/main.js"></script>
-      <title>Registro nadadores de aguas abiertas</title>
+    <script defer src="js/main.js"></script>
+    <title>Registro de precios</title>
 </head>
 <body>
-    <h1>Registros</h1>
-    <p>Mi idea es llevar a cabo un registro de nadadores de aguas abiertas, practica que yo realizo. Entonces para que cada nadador pueda ingresar cuanto nado en tiempo y distancia. Si utilizo traje de neopreno o no y en que lugar lo hizo. Y luego poder ver los registros de cada nadador.
+        <div class="container">
+        <header>
+            <h1>🏪 Registro de Precios</h1>
+            <p>Sistema de seguimiento de precios para supermercados</p>
+        </header>
 
-    </p>
+        <main>
+            <!-- Sección Agregar Producto -->
+            <section id="seccion-agregar-producto" class="seccion">
+                <h2>Agregar Nuevo Producto</h2>
+                <form id="formulario-producto">
+                    <input type="text" id="input-nombre" placeholder="Nombre del producto" required>
+                    <input type="text" id="input-marca" placeholder="Marca">
+                    <input type="text" id="input-tamaño" placeholder="Tamaño (ej: 900ml)">
+                    <button type="submit">Agregar Producto</button>
+                </form>
+                <div id="mensaje-producto" class="mensaje"></div>
+            </section>
+
+            <!-- Sección Registrar Precio -->
+        <section id="seccion-registrar-precio" class="seccion">
+    <h2>Registrar Precio</h2>
+    <form id="formulario-precio">
+    <input type="text" id="input-producto-precio" placeholder="Nombre del producto" required>
+    <select id="select-supermercado" required>
+        <option value="">Seleccionar supermercado</option>
+    </select>
+    <input type="number" id="input-precio" placeholder="Precio" step="0.01" required>
+    <button type="submit">Registrar Precio</button>
+</form>
+<div id="mensaje-precio" class="mensaje"></div>
+
+</section>
+
+            <!-- Sección Consultas -->
+            <section id="seccion-consultas" class="seccion">
+    <h2>Consultas</h2>
+    <div class="botones-consulta">
+    <button id="btn-ver-productos">Ver Todos los Productos</button>
+    <button id="btn-ver-historial">Buscar Historial de Precios</button>
+    <button id="btn-eliminar-producto">Eliminar Producto</button>
+</div>
+    <div id="resultados-consulta"></div>
+</section>
+        </main>
+    </div>
+
 </body>
 </html>

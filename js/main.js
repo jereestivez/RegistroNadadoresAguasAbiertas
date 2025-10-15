@@ -1,220 +1,287 @@
-// =============================================
-// SIMULADOR REGISTRO DE NADADORES -
-// =============================================
+//supermercados
+const SUPERMERCADOS = [
+    "Carrefour 292 - Comodoro Rivadavia",
+    "Hiper Changomas 1057 - Comodoro Rivadavia", 
+    "Maxiconsumo - Comodoro Rivadavia"
+];
 
-// ARRAYS PRINCIPALES
-const nadadores = []
-const registros = []
-let contadorId = 1
+// productos y precios
+let productos = [];
+let precios = [];
 
-// FUNCIONES AUXILIARES
-// Función flecha para validar números positivos
-const esNumeroPositivo = (valor) => !isNaN(valor) && valor > 0
-
-// =============================================
-// FUNCIONES PRINCIPALES
-// =============================================
-
-// FUNCIÓN 1: Agregar nadador
-function agregarNadador() {
-    const nombre = prompt("Ingrese el nombre del nadador:")
-    const apellido = prompt("Ingrese el apellido del nadador:")
-    
-    if (!nombre || !apellido) {
-        alert("❌ Debe ingresar nombre y apellido")
-        return
+//agregar producto y precio
+function agregarProducto(nombre, marca, tamaño){
+    if (!nombre){
+        return alert("El nombre del producto no puede estar vacío");
     }
-    
-    const nuevoNadador = {
-        id: contadorId++,
-        nombre: nombre,
-        apellido: apellido
-    }
-    
-    nadadores.push(nuevoNadador)
-    alert(`✅ Nadador "${nombre} ${apellido}" agregado correctamente.`)
+    let nuevoProducto = {
+        nombre: nombre, 
+        marca: marca || "No especificada",
+        tamaño: tamaño || "No especificado"
+    };
+    productos.push(nuevoProducto);
+    guardarDatos();
+    return { exito: true, mensaje: "Producto agregado", producto: nuevoProducto };
 }
 
-// FUNCIÓN 2: Registrar sesión de nado
-function registrarSesion() {
-    if (nadadores.length === 0) {
-        alert("❌ Primero debe agregar al menos un nadador")
-        return
+//registrar precio
+function registrarPrecio(nombreProducto, supermercado, precio) {
+    if (!nombreProducto || !supermercado || !precio) {
+        return { exito: false, mensaje: "Faltan datos" };
     }
-    
-    // Mostrar nadadores
-    let listaNadadores = "Seleccione un nadador:\n"
-    let index = 1
-    for (const nadador of nadadores) {
-        listaNadadores += `${index}. ${nadador.nombre} ${nadador.apellido}\n`
-        index++
+
+    let producto = productos.find(p => p.nombre === nombreProducto);
+    if (!producto) {
+        return { exito: false, mensaje: "Producto no encontrado" };
     }
-    
-    const opcion = parseInt(prompt(listaNadadores)) - 1
-    
-    if (isNaN(opcion) || opcion < 0 || opcion >= nadadores.length) {
-        alert("❌ Selección inválida")
-        return;
-    }
-    
-    const nadadorSeleccionado = nadadores[opcion]
-    
-    const metros = parseFloat(prompt("Metros nadados:"))
-    const tiempo = parseFloat(prompt("Tiempo en minutos:"))
-    const lugar = prompt("Lugar de nado:")
-    
-    // PREGUNTAR POR TRAJE DE NEOPRENO
-    let trajeNeoprenoInput = prompt("¿Usó traje de neopreno? (si/no):")
-    const trajeNeopreno = trajeNeoprenoInput !== null && trajeNeoprenoInput.toLowerCase() === "si"
-    
-    // VALIDACIONES
-    if (!esNumeroPositivo(metros) || !esNumeroPositivo(tiempo) || !lugar) {
-        alert("❌ Datos inválidos. Metros y tiempo deben ser números positivos.")
-        return
-    }
-    
-    const nuevoRegistro = {
-        id: contadorId++,
-        idNadador: nadadorSeleccionado.id,
-        nadador: `${nadadorSeleccionado.nombre} ${nadadorSeleccionado.apellido}`,
-        metros: metros,
-        tiempo: tiempo,
-        lugar: lugar,
-        fecha: new Date().toISOString().split('T')[0],
-        trajeNeopreno: trajeNeopreno
-    }
-    
-    registros.push(nuevoRegistro)
-    alert("✅ Sesión registrada correctamente!")
+
+    let nuevoPrecio = {
+        nombreProducto: nombreProducto,
+        supermercado: supermercado,
+        precio: parseFloat(precio),
+        fecha: new Date().toLocaleDateString()
+    };
+
+    precios.push(nuevoPrecio);
+    guardarDatos();
+    return { exito: true, mensaje: "Precio registrado", registro: nuevoPrecio };
 }
 
-// FUNCIÓN 3: Ver registros de un nadador
-function verRegistrosNadador() {
-    if (nadadores.length === 0) {
-        alert("❌ No hay nadadores registrados")
-        return;
+//listar productos
+function listarProductos() {
+    if (productos.length === 0) {
+        return { exito: false, mensaje: "No hay productos cargados", productos: [] };
     }
-    
-    if (registros.length === 0) {
-        alert("📝 No hay sesiones registradas")
-        return;
-    }
-    
-    // Mostrar nadadores 
-    let listaNadadores = "Seleccione un nadador para ver sus registros:\n"
-    let index = 1
-    for (const nadador of nadadores) {
-        listaNadadores += `${index}. ${nadador.nombre} ${nadador.apellido}\n`
-        index++
-    }
-    
-    const opcion = parseInt(prompt(listaNadadores)) - 1
-    
-    // Funcion flecha para validar
-    if (!esNumeroPositivo(opcion + 1) || opcion < 0 || opcion >= nadadores.length) {
-        alert("❌ Selección inválida");
-        return;
-    }
-    
-    const nadadorSeleccionado = nadadores[opcion]
-    const registrosNadador = registros.filter(reg => reg.idNadador === nadadorSeleccionado.id)
-    
-    if (registrosNadador.length === 0) {
-        alert(`📝 ${nadadorSeleccionado.nombre} no tiene sesiones registradas`)
-        return;
-    }
-    
-    // Mostrar registros en consola
-    console.log(`=== REGISTROS DE ${nadadorSeleccionado.nombre.toUpperCase()} ===`)
-    for (const registro of registrosNadador) {
-        console.log(`Fecha: ${registro.fecha}`)
-        console.log(`Lugar: ${registro.lugar}`)
-        console.log(`Metros: ${registro.metros}m`)
-        console.log(`Tiempo: ${registro.tiempo}min`)
-        console.log(`Neopreno: ${registro.trajeNeopreno ? "Sí" : "No"}`)
-        console.log("-------------------")
-    }
-    
-    alert(`Registros de ${nadadorSeleccionado.nombre} mostrados en la consola`)
+    return { exito: true, mensaje: `Se encontraron ${productos.length} productos`, productos };
 }
 
-// FUNCIÓN 4: Mostrar resumen general
-function mostrarResumen() {
-    console.log("=== RESUMEN GENERAL ===")
-    console.log(`Total nadadores: ${nadadores.length}`)
-    console.log(`Total sesiones: ${registros.length}`)
-    
-    if (nadadores.length > 0) {
-        console.log("\nNadadores registrados:")
-        for (const nadador of nadadores) {
-            const sesionesNadador = registros.filter(reg => reg.idNadador === nadador.id).length
-            console.log(`- ${nadador.nombre} ${nadador.apellido}: ${sesionesNadador} sesiones`);
-        }
+//ver historial de precios
+function verHistorialPrecios(nombreProducto) {
+    if (!nombreProducto) {
+        return { exito: false, mensaje: "Debe ingresar un nombre de producto", precios: [] };
     }
-    
-    if (registros.length > 0) {
-        console.log("\nÚltimas sesiones registradas:");
-        const ultimasSesiones = registros.slice(-3).reverse()
-        for (const sesion of ultimasSesiones) {
-            console.log(`- ${sesion.nadador}: ${sesion.metros}m en ${sesion.lugar} - Neopreno: ${sesion.trajeNeopreno ? "Sí" : "No"}`)
-        }
+    let producto = productos.find(p => p.nombre === nombreProducto);
+    if (!producto) {
+        return { exito: false, mensaje: "Producto no encontrado", precios: [] };
     }
-    
-    alert("Resumen general mostrado en la consola")
+
+    let preciosProducto = precios.filter(p => p.nombreProducto === nombreProducto);
+    if (preciosProducto.length === 0) {
+        return { exito: true, mensaje: `El producto "${nombreProducto}" no tiene precios registrados`, precios: [] };
+    }
+
+    return {
+        exito: true,
+        mensaje: `Se encontraron ${preciosProducto.length} registros de precios para "${nombreProducto}"`,
+        producto,
+        precios: preciosProducto
+    };
 }
 
-// =============================================
-// MENÚ PRINCIPAL
-// =============================================
-
-function mostrarMenu() {
-    let opcion
-    
-    do {
-        opcion = prompt(`=== SIMULADOR REGISTRO DE NADADORES ===
-
-1. Agregar nadador
-2. Registrar sesión de nado
-3. Ver registros de un nadador
-4. Mostrar resumen general
-5. Salir
-
-Seleccione una opción:`);
-
-        if (opcion === null) {
-            break
-        }
-
-        if (!esNumeroPositivo(parseInt(opcion)) && opcion !== "5") {
-            alert("❌ Opción inválida")
-            continue
-        }
-
-        switch (opcion) {
-            case "1":
-                agregarNadador()
-                break
-            case "2":
-                registrarSesion()
-                break
-            case "3":
-                verRegistrosNadador()
-                break
-            case "4":
-                mostrarResumen()
-                break
-            case "5":
-                alert("👋 ¡Hasta pronto!")
-                break
-            default:
-                alert("❌ Opción inválida")
-        }
-    } while (opcion !== "5")
+//filtros
+function filtrarProductos(criterio) {
+    return productos.filter(criterio);
+}
+function productosporMarca(marca) {
+    return filtrarProductos(productos => productos.marca.includes(marca));
+}
+function buscarProductos(texto) {
+    return filtrarProductos(producto => producto.nombre.toLowerCase().includes(texto.toLowerCase()));
 }
 
-// =============================================
-// INICIAR SISTEMA
-// =============================================
+//LocalStorage
+function guardarDatos() {
+    localStorage.setItem('productosSupermercado', JSON.stringify(productos));
+    localStorage.setItem('preciosSupermercado', JSON.stringify(precios));
+}
+function cargarDatos() {
+    let productosGuardados = localStorage.getItem('productosSupermercado');
+    let preciosGuardados = localStorage.getItem('preciosSupermercado');
+    if (productosGuardados) productos = JSON.parse(productosGuardados);
+    if (preciosGuardados) precios = JSON.parse(preciosGuardados);
+}
 
-alert("¡Bienvenido al Simulador Registro de Nadadores!")
-mostrarMenu()
+//cargar supermercados
+const cargarSupermercados = () => {
+    const select = document.getElementById('select-supermercado');
+    select.innerHTML = '<option value="">Seleccionar supermercado</option>';
+    SUPERMERCADOS.forEach(supermercado => {
+        const option = document.createElement('option');
+        option.value = supermercado;
+        option.textContent = supermercado;
+        select.appendChild(option);
+    });
+};
+
+//formulario agregar producto
+function manejarAgregarProducto(event) {
+    event.preventDefault();
+    const nombre = document.getElementById('input-nombre').value;
+    const marca = document.getElementById('input-marca').value;
+    const tamaño = document.getElementById('input-tamaño').value;
+
+    const resultado = agregarProducto(nombre, marca, tamaño);
+    const mensajeElement = document.getElementById('mensaje-producto');
+    mensajeElement.textContent = resultado.mensaje;
+    mensajeElement.className = resultado.exito ? 'mensaje exito' : 'mensaje error';
+
+    if (resultado.exito) document.getElementById('formulario-producto').reset();
+}
+document.getElementById('formulario-producto').addEventListener('submit', manejarAgregarProducto);
+
+//eliminar producto
+const eliminarProducto = (nombreProducto) => {
+    if (!nombreProducto) return { exito: false, mensaje: "Debe ingresar un nombre de producto" };
+
+    const productoIndex = productos.findIndex(p => p.nombre === nombreProducto);
+    if (productoIndex === -1) return { exito: false, mensaje: "Producto no encontrado" };
+
+    const productoEliminado = productos.splice(productoIndex, 1)[0];
+    const preciosEliminados = precios.filter(p => p.nombreProducto === nombreProducto);
+    precios = precios.filter(p => p.nombreProducto !== nombreProducto);
+    guardarDatos();
+
+    return { exito: true, mensaje: `Producto "${nombreProducto}" eliminado exitosamente`, productoEliminado, preciosEliminados: preciosEliminados.length };
+};
+
+//mostrar interfaz eliminar
+const mostrarInterfazEliminar = () => {
+    const contenedor = document.getElementById('resultados-consulta');
+    contenedor.innerHTML = `
+        <div class="formulario-eliminar">
+            <h3>Eliminar Producto</h3>
+            <input type="text" id="input-eliminar-producto" placeholder="Nombre del producto a eliminar">
+            <button id="btn-confirmar-eliminar">Eliminar Producto</button>
+            <div id="mensaje-eliminar"></div>
+        </div>
+    `;
+
+    const btnConfirmar = document.getElementById('btn-confirmar-eliminar');
+    btnConfirmar.addEventListener('click', manejarEliminarProducto);
+};
+
+//manejar eliminación
+const manejarEliminarProducto = () => {
+    const nombreProducto = document.getElementById('input-eliminar-producto').value;
+    const mensajeElement = document.getElementById('mensaje-eliminar');
+    const resultado = eliminarProducto(nombreProducto);
+
+    mensajeElement.textContent = resultado.mensaje;
+    mensajeElement.className = resultado.exito ? 'mensaje exito' : 'mensaje error';
+    if (resultado.exito) document.getElementById('input-eliminar-producto').value = '';
+};
+
+//formulario precios
+function manejarRegistrarPrecio(event) {
+    event.preventDefault();
+    const nombreProducto = document.getElementById('input-producto-precio').value;
+    const supermercado = document.getElementById('select-supermercado').value;
+    const precio = document.getElementById('input-precio').value;
+
+    const resultado = registrarPrecio(nombreProducto, supermercado, precio);
+    const mensajeElement = document.getElementById('mensaje-precio');
+    mensajeElement.textContent = resultado.mensaje;
+    mensajeElement.className = resultado.exito ? 'mensaje exito' : 'mensaje error';
+
+    if (resultado.exito) document.getElementById('formulario-precio').reset();
+}
+
+//mostrar productos
+function mostrarProductosEnPantalla(){
+    const contenedor = document.getElementById('resultados-consulta');
+    const resultado = listarProductos();
+    contenedor.innerHTML = '';
+
+    if (!resultado.exito) {
+        contenedor.innerHTML = `<p class="mensaje info">${resultado.mensaje}</p>`;
+        return;
+    }
+
+    const titulo = document.createElement('h3');
+    titulo.textContent = `Productos Cargados (${resultado.productos.length})`;
+    contenedor.appendChild(titulo);
+
+    const lista = document.createElement('div');
+    lista.className = 'lista-productos';
+    resultado.productos.forEach((producto, index) => {
+        const item = document.createElement('div');
+        item.className = 'item-producto';
+        item.innerHTML = `
+            <strong>${index + 1}. ${producto.nombre}</strong>
+            ${producto.marca ? `- ${producto.marca}` : ''}
+            ${producto.tamaño ? `- ${producto.tamaño}` : ''}
+        `;
+        lista.appendChild(item);
+    });
+    contenedor.appendChild(lista);
+}
+
+//mostrar historial
+function mostrarFormularioHistorial(){
+    const contenedor = document.getElementById('resultados-consulta');
+    contenedor.innerHTML = `
+        <div class="formulario-historial">
+            <h3>Ver Historial de Precios</h3>
+            <input type="text" id="input-buscar-producto" placeholder="Nombre del producto">
+            <button id="btn-buscar-historial">Buscar Precios</button>
+        </div>
+        <div id="resultado-historial"></div>
+    `;
+
+    const btnBuscar = document.getElementById('btn-buscar-historial');
+    btnBuscar.addEventListener('click', buscarYMostrarHistorial);
+}
+
+function buscarYMostrarHistorial() {
+    const nombreProducto = document.getElementById('input-buscar-producto').value;
+    const resultadoContenedor = document.getElementById('resultado-historial');
+    const resultado = verHistorialPrecios(nombreProducto);
+
+    resultadoContenedor.innerHTML = '';
+    if (!resultado.exito) {
+        resultadoContenedor.innerHTML = `<p class="mensaje error">${resultado.mensaje}</p>`;
+        return;
+    }
+
+    if (resultado.precios.length === 0) {
+        resultadoContenedor.innerHTML = `<p class="mensaje info">${resultado.mensaje}</p>`;
+        return;
+    }
+
+    const infoProducto = document.createElement('div');
+    infoProducto.className = 'info-producto';
+    infoProducto.innerHTML = `<h4>${resultado.producto.nombre}</h4><p>${resultado.producto.marca} - ${resultado.producto.tamaño}</p>`;
+    resultadoContenedor.appendChild(infoProducto);
+
+    const tabla = document.createElement('table');
+    tabla.className = 'tabla-precios';
+    tabla.innerHTML = `
+        <thead><tr><th>Fecha</th><th>Supermercado</th><th>Precio</th></tr></thead>
+        <tbody>
+            ${resultado.precios.map(precio => `
+                <tr>
+                    <td>${precio.fecha}</td>
+                    <td>${precio.supermercado}</td>
+                    <td>$${precio.precio.toFixed(2)}</td>
+                </tr>`).join('')}
+        </tbody>
+    `;
+    resultadoContenedor.appendChild(tabla);
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', () => {
+    cargarSupermercados();
+    cargarDatos();
+
+    const formPrecio = document.getElementById('formulario-precio');
+    if (formPrecio) formPrecio.addEventListener('submit', manejarRegistrarPrecio);
+
+    const btnVerProductos = document.getElementById('btn-ver-productos');
+    const btnVerHistorial = document.getElementById('btn-ver-historial');
+    const btnEliminarProducto = document.getElementById('btn-eliminar-producto');
+
+    if (btnVerProductos) btnVerProductos.addEventListener('click', mostrarProductosEnPantalla);
+    if (btnVerHistorial) btnVerHistorial.addEventListener('click', mostrarFormularioHistorial);
+    if (btnEliminarProducto) btnEliminarProducto.addEventListener('click', mostrarInterfazEliminar);
+});
